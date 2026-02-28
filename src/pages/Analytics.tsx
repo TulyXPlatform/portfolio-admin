@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaGlobe, FaDesktop, FaChrome, FaEye, FaUsers, FaCalendarDay } from 'react-icons/fa';
-const API = import.meta.env.VITE_API_URL + '/api';
+const rawApi = import.meta.env.VITE_API_URL;
+if (!rawApi) console.error('VITE_API_URL not defined (analytics)');
+const API = rawApi ? `${rawApi}/api` : '/api';
+console.log('[admin] using API base', API);
 
 const getH = () => ({ Authorization: `Bearer ${localStorage.getItem('admin-token')}` });
 
