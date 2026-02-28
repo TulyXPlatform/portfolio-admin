@@ -33,7 +33,7 @@ const Settings: React.FC = () => {
     data.append('file', file);
     try {
       const res = await axios.post(`${API}/upload`, data, { headers: { ...getH(), 'Content-Type': 'multipart/form-data' } });
-      const url = `http://localhost:5000${res.data.url}`;
+      const url = `${import.meta.env.VITE_API_URL}${res.data.url}`;
       setCvLink(url);
       await axios.put(`${API}/admin/settings/cvLink`, { value: url }, { headers: getH() });
       setMsg('CV uploaded and saved! URL: ' + url);

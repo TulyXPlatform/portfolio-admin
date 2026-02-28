@@ -54,7 +54,7 @@ const Projects: React.FC = () => {
     const data = new FormData();
     data.append('file', file);
     const res = await axios.post(`${API}/upload`, data, { headers: { ...getH(), 'Content-Type': 'multipart/form-data' } });
-    setForm(f => ({ ...f, image: `http://localhost:5000${res.data.url}` }));
+    setForm(f => ({ ...f, image: `${import.meta.env.VITE_API_URL}${res.data.url}` }));
   };
 
   return (
