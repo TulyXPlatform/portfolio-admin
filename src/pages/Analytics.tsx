@@ -25,7 +25,10 @@ const Analytics: React.FC = () => {
   useEffect(() => {
     axios.get(`${API}/admin/analytics`, { headers: getH() })
       .then(r => setData(r.data))
-      .catch(() => setData(null))
+      .catch(err => {
+        console.error('[admin] analytics request failed', err);
+        setData(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
