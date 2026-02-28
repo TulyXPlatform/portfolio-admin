@@ -23,11 +23,15 @@ const Login: React.FC = () => {
         setError('');
         setLoading(true);
         try {
+            console.log(`POSTing to ${API_BASE}/login`);
             const res = await axios.post(`${API_BASE}/login`, { username, password });
             localStorage.setItem('admin-token', res.data.token);
             navigate('/');
-        } catch {
-            setError('Invalid username or password');
+        } catch (err: any) {
+            console.error('Login request failed', err);
+            const status = err.response?.status;
+            const message = err.response?.data?.error || err.message;
+            setError(`(${status}) ${message}`);
         } finally {
             setLoading(false);
         }
@@ -45,6 +49,10 @@ const Login: React.FC = () => {
                 </div>
 
                 {error && <div className="alert alert-error">{error}</div>}
+                {/* show API base so it's clear what endpoint is being used */}
+                <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: '0.5rem' }}>
+                    API endpoint: {API_BASE}/login
+                </div>
 
                 <form onSubmit={handleSubmit} className="form-grid">
                     <div className="form-group">
