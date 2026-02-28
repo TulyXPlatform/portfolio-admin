@@ -21,19 +21,25 @@ interface Analytics {
 const Analytics: React.FC = () => {
   const [data, setData] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     axios.get(`${API}/admin/analytics`, { headers: getH() })
       .then(r => setData(r.data))
       .catch(err => {
         console.error('[admin] analytics request failed', err);
+        setErrorMsg(err.response?.data?.error || err.message);
         setData(null);
       })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="admin-page" style={{ color: 'var(--text-muted)' }}>Loading analytics…</div>;
-  if (!data) return <div className="admin-page"><div className="alert alert-error">Could not load analytics. Make sure the server is running.</div></div>;
+  if (!data) return <div className="admin-page">
+      <div className="alert alert-error">
+        Could not load analytics. {errorMsg && `Error: ${errorMsg}`}<br />Make sure the server is running and the API URL is correct.
+      </div>
+    </div>;
 
   const maxDaily = Math.max(...data.daily.map(d => d.count), 1);
   const maxCountry = Math.max(...data.byCountry.map(c => c.count), 1);
