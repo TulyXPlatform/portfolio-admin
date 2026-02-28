@@ -3,7 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../index.css';
 
-const API_BASE = import.meta.env.VITE_API_URL + '/api';
+// build-time check for the API URL; will be undefined if env var is missing
+const rawApiUrl = import.meta.env.VITE_API_URL;
+if (!rawApiUrl) {
+  console.error("VITE_API_URL is not defined. The admin app cannot contact the server.");
+}
+const API_BASE = rawApiUrl ? `${rawApiUrl}/api` : "/api"; // fallback to relative path (likely broken)
+
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
