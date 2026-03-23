@@ -41,8 +41,8 @@ const Analytics: React.FC = () => {
       </div>
     </div>;
 
-  const maxDaily = Math.max(...data.daily.map(d => d.count), 1);
-  const maxCountry = Math.max(...data.byCountry.map(c => c.count), 1);
+  const maxDaily = Math.max(...(data.daily || []).map(d => d.count), 1);
+  const maxCountry = Math.max(...(data.byCountry || []).map(c => c.count), 1);
 
   return (
     <div className="admin-page">
@@ -54,9 +54,9 @@ const Analytics: React.FC = () => {
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
         {[
-          { label: 'Total Visitors', value: data.total, icon: <FaUsers />, color: 'var(--primary)' },
-          { label: "Today's Visitors", value: data.today, icon: <FaCalendarDay />, color: 'var(--green)' },
-          { label: 'Countries', value: data.byCountry.length, icon: <FaGlobe />, color: '#ccff00' },
+          { label: 'Total Visitors', value: data.total || 0, icon: <FaUsers />, color: 'var(--primary)' },
+          { label: "Today's Visitors", value: data.today || 0, icon: <FaCalendarDay />, color: 'var(--green)' },
+          { label: 'Countries', value: (data.byCountry || []).length, icon: <FaGlobe />, color: '#ccff00' },
         ].map(s => (
           <div key={s.label} className="stat-card" style={{ borderLeft: `3px solid ${s.color}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
@@ -69,19 +69,19 @@ const Analytics: React.FC = () => {
       </div>
 
       {/* Daily chart */}
-      {data.daily.length > 0 && (
+      {(data.daily || []).length > 0 && (
         <div className="admin-card" style={{ marginBottom: '1.5rem' }}>
           <h2 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '1.25rem', color: 'var(--text-muted)' }}>
             Visitors — Last 30 Days
           </h2>
           <div className="bar-chart">
-            {data.daily.map(d => (
+            {(data.daily || []).map(d => (
               <div key={d.date} className="bar-wrap" title={`${d.date}: ${d.count} visitors`}>
                 <div
                   className="bar"
                   style={{ height: `${Math.max((d.count / maxDaily) * 100, 4)}%` }}
                 />
-                <span className="bar-label">{d.date.slice(5)}</span>
+                <span className="bar-label">{d.date.length > 5 ? d.date.slice(5) : d.date}</span>
               </div>
             ))}
           </div>
@@ -94,7 +94,7 @@ const Analytics: React.FC = () => {
           <h2 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-muted)' }}>
             <FaGlobe style={{ marginRight: '0.4rem' }} /> Top Countries
           </h2>
-          {data.byCountry.map(c => (
+          {(data.byCountry || []).map(c => (
             <div key={c.country} className="country-bar-row">
               <span className="country-name">{c.country || 'Unknown'}</span>
               <div className="country-bar-bg">
@@ -103,7 +103,7 @@ const Analytics: React.FC = () => {
               <span className="country-count">{c.count}</span>
             </div>
           ))}
-          {data.byCountry.length === 0 && <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No data yet.</p>}
+          {(data.byCountry || []).length === 0 && <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No data yet.</p>}
         </div>
 
         {/* Browser + OS */}
@@ -112,11 +112,11 @@ const Analytics: React.FC = () => {
             <h2 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-muted)' }}>
               <FaChrome style={{ marginRight: '0.4rem' }} /> Browsers
             </h2>
-            {data.byBrowser.map(b => (
+            {(data.byBrowser || []).map(b => (
               <div key={b.browser} className="country-bar-row">
                 <span className="country-name">{b.browser}</span>
                 <div className="country-bar-bg">
-                  <div className="country-bar-fill" style={{ width: `${(b.count / data.total) * 100}%`, background: 'var(--primary)' }} />
+                  <div className="country-bar-fill" style={{ width: `${(b.count / (data.total || 1)) * 100}%`, background: 'var(--primary)' }} />
                 </div>
                 <span className="country-count">{b.count}</span>
               </div>
@@ -126,11 +126,11 @@ const Analytics: React.FC = () => {
             <h2 style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '1rem', color: 'var(--text-muted)' }}>
               <FaDesktop style={{ marginRight: '0.4rem' }} /> Operating Systems
             </h2>
-            {data.byOs.map(o => (
+            {(data.byOs || []).map(o => (
               <div key={o.os} className="country-bar-row">
                 <span className="country-name">{o.os}</span>
                 <div className="country-bar-bg">
-                  <div className="country-bar-fill" style={{ width: `${(o.count / data.total) * 100}%`, background: 'var(--secondary)' }} />
+                  <div className="country-bar-fill" style={{ width: `${(o.count / (data.total || 1)) * 100}%`, background: 'var(--secondary)' }} />
                 </div>
                 <span className="country-count">{o.count}</span>
               </div>
@@ -157,10 +157,10 @@ const Analytics: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {data.recent.length === 0 && (
+              {(data.recent || []).length === 0 && (
                 <tr><td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem' }}>No visitors yet.</td></tr>
               )}
-              {data.recent.map(v => (
+              {(data.recent || []).map(v => (
                 <tr key={v.id}>
                   <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{v.ipAddress}</td>
                   <td>{v.country || '—'}</td>
@@ -168,7 +168,7 @@ const Analytics: React.FC = () => {
                   <td><span className="badge badge-blue">{v.browser}</span></td>
                   <td><span className="badge badge-yellow">{v.os}</span></td>
                   <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                    {new Date(v.visitedAt).toLocaleString()}
+                    {v.visitedAt ? new Date(v.visitedAt).toLocaleString() : '—'}
                   </td>
                 </tr>
               ))}
